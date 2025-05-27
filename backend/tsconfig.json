@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "target": "ES2021",                          // Soporte moderno de JavaScript
+    "module": "CommonJS",                        // Compatible con Node.js
+    "moduleResolution": "node",
+    "esModuleInterop": true,                     // Permite importar librerías CommonJS como Express
+    "experimentalDecorators": true,              // ✅ Soporte para @Entity, @Column, etc.
+    "emitDecoratorMetadata": true,               // ✅ Necesario para TypeORM entender tipos
+    "strict": true,                              // Verificaciones estrictas de tipos
+    "skipLibCheck": true,                        // Ignora errores de .d.ts
+    "outDir": "./dist",                          // Carpeta de salida si usas build
+    "forceConsistentCasingInFileNames": true     // Evita errores por nombres de archivos mal escritos
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
