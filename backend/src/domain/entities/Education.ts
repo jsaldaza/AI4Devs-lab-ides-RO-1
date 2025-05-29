@@ -15,14 +15,14 @@ export class Education {
     @Column()
     fieldOfStudy!: string;
 
-    @Column({ type: 'date' })
+    @Column()
     startDate!: Date;
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ nullable: true })
     endDate?: Date;
 
-    @Column({ default: false, name: 'isCurrentlyStudying' })
-    current!: boolean;
+    @Column({ default: false })
+    isCurrentlyStudying!: boolean;
 
     @Column({ nullable: true })
     description?: string;

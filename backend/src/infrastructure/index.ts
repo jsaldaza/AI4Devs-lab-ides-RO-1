@@ -5,17 +5,27 @@ import cors from 'cors';
 import { initDatabase } from './database';
 import { AppDataSource } from './typeorm.config';
 import candidateRoutes from './routes/candidateRoutes';
+import authRoutes from './routes/authRoutes';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
+// Configuración de CORS
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+// Middleware para procesar JSON
 app.use(express.json());
 
-// Rutas
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/candidates', candidateRoutes);
 
 // Ruta raíz

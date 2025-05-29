@@ -21,6 +21,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   synchronize: process.env.NODE_ENV === 'development', // Solo sincronizar en desarrollo
+  dropSchema: process.env.NODE_ENV === 'development', // Eliminar schema en desarrollo
   logging: process.env.NODE_ENV === 'development',
   entities: [path.join(__dirname, '../domain/entities/**/*.{ts,js}')],
   migrations: [path.join(__dirname, './migrations/**/*.{ts,js}')],

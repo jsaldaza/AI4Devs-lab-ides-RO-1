@@ -17,31 +17,25 @@ export class Candidate {
     @Column({ unique: true })
     email!: string;
 
-    @Column()
-    phone!: string;
+    @Column({ nullable: true })
+    phone?: string;
 
     @Column({ nullable: true })
-    address?: string;
+    linkedIn?: string;
+
+    @Column({ nullable: true })
+    portfolio?: string;
+
+    @Column({ nullable: true })
+    summary?: string;
 
     @Column('simple-array', { nullable: true })
-    technicalSkills?: string[];
-
-    @Column('int', { default: 0 })
-    yearsOfExperience!: number;
-
-    @Column({ nullable: true })
-    currentPosition?: string;
-
-    @Column({ nullable: true })
-    preferredRole?: string;
-
-    @Column({ nullable: true })
-    cvFileUrl?: string;
+    skills?: string[];
 
     @Column({ default: true })
     isActive!: boolean;
 
-    @Column({ type: 'timestamp', nullable: true })
+    @Column({ nullable: true })
     dataRetentionDate?: Date;
 
     @OneToMany(() => Education, education => education.candidate, {

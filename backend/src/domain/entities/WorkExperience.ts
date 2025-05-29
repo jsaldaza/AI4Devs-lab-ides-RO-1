@@ -12,17 +12,17 @@ export class WorkExperience {
     @Column()
     position!: string;
 
-    @Column('text')
-    description!: string;
-
-    @Column({ type: 'date' })
+    @Column()
     startDate!: Date;
 
-    @Column({ type: 'date', nullable: true })
+    @Column({ nullable: true })
     endDate?: Date;
 
-    @Column({ default: false, name: 'isCurrentJob' })
-    current!: boolean;
+    @Column({ default: false })
+    isCurrentJob!: boolean;
+
+    @Column({ nullable: true })
+    description?: string;
 
     @Column('simple-array', { nullable: true })
     technologies?: string[];
