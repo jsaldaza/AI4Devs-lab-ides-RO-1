@@ -2,19 +2,27 @@ import { DataSource } from 'typeorm';
 import { TestDataSource } from '../test/config/test-db.config';
 import { AppDataSource } from './typeorm.config';
 
-// Exportar el DataSource para que pueda ser usado en los servicios
+let dataSource: DataSource;
+
 export const getDataSource = (): DataSource => {
-  return process.env.NODE_ENV === 'test' ? TestDataSource : AppDataSource;
+  if (!dataSource) {
+    dataSource = process.env.NODE_ENV === 'test' ? TestDataSource : AppDataSource;
+  }
+  return dataSource;
 };
 
 export const initDatabase = async () => {
   try {
-    const connection = await AppDataSource.initialize();
-    console.log('✅ Database connection established successfully');
+    const connection = getDataSource();
 
-    // Test the connection
-    const testQuery = await connection.query('SELECT NOW()');
-    console.log('📅 Database time:', testQuery[0].now);
+    if (!connection.isInitialized) {
+      await connection.initialize();
+      console.log('✅ Database connection established successfully');
+
+      // Test the connection
+      const testQuery = await connection.query('SELECT NOW()');
+      console.log('📅 Database time:', testQuery[0].now);
+    }
 
     return connection;
   } catch (error) {

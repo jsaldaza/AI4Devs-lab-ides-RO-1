@@ -7,26 +7,27 @@ import {
     TextField,
     Button,
     Typography,
-    Alert,
     Paper
 } from '@mui/material';
+import { AppError } from '../services/error.service';
+import { ErrorDisplay } from '../components/ErrorDisplay';
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState<AppError | null>(null);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setError(null);
 
         try {
             await login(email, password);
             navigate('/dashboard');
         } catch (err) {
-            setError('Invalid email or password');
+            setError(err as AppError);
         }
     };
 
@@ -53,12 +54,13 @@ export const Login: React.FC = () => {
                     <Typography component="h1" variant="h5">
                         Sign In
                     </Typography>
-                    {error && (
-                        <Typography color="error" sx={{ mt: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
-                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
+
+                    <ErrorDisplay
+                        error={error}
+                        onClose={() => setError(null)}
+                    />
+
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
                         <TextField
                             margin="normal"
                             required
@@ -70,6 +72,8 @@ export const Login: React.FC = () => {
                             autoFocus
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            error={error?.type === 'VALIDATION' && error.details?.email !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.email : ''}
                         />
                         <TextField
                             margin="normal"
@@ -82,6 +86,8 @@ export const Login: React.FC = () => {
                             autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            error={error?.type === 'VALIDATION' && error.details?.password !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.password : ''}
                         />
                         <Button
                             type="submit"

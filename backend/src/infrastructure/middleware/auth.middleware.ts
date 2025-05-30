@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from '../../application/services/auth.service';
+import { IAuthService } from '../../application/interfaces/IAuthService';
+import { getDataSource } from '../database';
+import { User } from '../../domain/entities/User';
 
 declare global {
     namespace Express {
@@ -10,10 +13,11 @@ declare global {
 }
 
 export class AuthMiddleware {
-    private authService: AuthService;
+    private authService: IAuthService;
 
     constructor() {
-        this.authService = new AuthService();
+        const userRepository = getDataSource().getRepository(User);
+        this.authService = new AuthService(userRepository);
     }
 
     authenticate = async (req: Request, res: Response, next: NextFunction) => {

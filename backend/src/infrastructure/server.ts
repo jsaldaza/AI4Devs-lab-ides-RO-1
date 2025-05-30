@@ -3,6 +3,7 @@ import cors from 'cors';
 import { getDataSource } from './database';
 import authRoutes from './routes/authRoutes';
 import candidateRoutes from './routes/candidateRoutes';
+import { apiLimiter } from './middleware/rate-limit.middleware';
 
 export const createServer = async (): Promise<Express> => {
     const app = express();
@@ -17,6 +18,9 @@ export const createServer = async (): Promise<Express> => {
 
     // Middleware
     app.use(express.json());
+
+    // Apply rate limiting to all API routes
+    app.use('/api', apiLimiter);
 
     // Configurar el DataSource correcto según el entorno
     const dataSource = getDataSource();

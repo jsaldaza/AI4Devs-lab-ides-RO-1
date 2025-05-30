@@ -7,9 +7,10 @@ import {
     TextField,
     Button,
     Typography,
-    Alert,
     Paper
 } from '@mui/material';
+import { AppError, ErrorType } from '../services/error.service';
+import { ErrorDisplay } from '../components/ErrorDisplay';
 
 export const Register: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ export const Register: React.FC = () => {
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
+    const [error, setError] = useState<AppError | null>(null);
     const { register } = useAuth();
     const navigate = useNavigate();
 
@@ -29,14 +30,22 @@ export const Register: React.FC = () => {
             ...prev,
             [name]: value
         }));
+        // Limpiar errores cuando el usuario empieza a escribir
+        setError(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setError(null);
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError({
+                type: ErrorType.VALIDATION,
+                message: 'Las contraseñas no coinciden',
+                details: {
+                    confirmPassword: ['Las contraseñas no coinciden']
+                }
+            });
             return;
         }
 
@@ -48,8 +57,8 @@ export const Register: React.FC = () => {
                 formData.password
             );
             navigate('/dashboard');
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'An error occurred during registration');
+        } catch (err) {
+            setError(err as AppError);
         }
     };
 
@@ -67,11 +76,12 @@ export const Register: React.FC = () => {
                     <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
                         Sign Up
                     </Typography>
-                    {error && (
-                        <Alert severity="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Alert>
-                    )}
+
+                    <ErrorDisplay
+                        error={error}
+                        onClose={() => setError(null)}
+                    />
+
                     <Box component="form" onSubmit={handleSubmit} noValidate>
                         <TextField
                             margin="normal"
@@ -82,6 +92,8 @@ export const Register: React.FC = () => {
                             autoFocus
                             value={formData.firstName}
                             onChange={handleChange}
+                            error={error?.type === 'VALIDATION' && error.details?.firstName !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.firstName : ''}
                         />
                         <TextField
                             margin="normal"
@@ -91,6 +103,8 @@ export const Register: React.FC = () => {
                             label="Last Name"
                             value={formData.lastName}
                             onChange={handleChange}
+                            error={error?.type === 'VALIDATION' && error.details?.lastName !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.lastName : ''}
                         />
                         <TextField
                             margin="normal"
@@ -101,6 +115,8 @@ export const Register: React.FC = () => {
                             autoComplete="email"
                             value={formData.email}
                             onChange={handleChange}
+                            error={error?.type === 'VALIDATION' && error.details?.email !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.email : ''}
                         />
                         <TextField
                             margin="normal"
@@ -111,6 +127,8 @@ export const Register: React.FC = () => {
                             type="password"
                             value={formData.password}
                             onChange={handleChange}
+                            error={error?.type === 'VALIDATION' && error.details?.password !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.password : ''}
                         />
                         <TextField
                             margin="normal"
@@ -121,6 +139,8 @@ export const Register: React.FC = () => {
                             type="password"
                             value={formData.confirmPassword}
                             onChange={handleChange}
+                            error={error?.type === 'VALIDATION' && error.details?.confirmPassword !== undefined}
+                            helperText={error?.type === 'VALIDATION' ? error.details?.confirmPassword : ''}
                         />
                         <Button
                             type="submit"

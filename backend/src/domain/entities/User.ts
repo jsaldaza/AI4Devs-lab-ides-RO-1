@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 
 @Entity('users')
@@ -39,30 +38,8 @@ export class User extends BaseEntity {
     Object.assign(this, partial);
   }
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    // Only hash the password if it's been modified
-    if (this.password && this.password.length < 60) {
-      const salt = await bcrypt.genSalt(12);
-      this.password = await bcrypt.hash(this.password, salt);
-    }
-  }
-
-  async validatePassword(password: string): Promise<boolean> {
-    try {
-      return await bcrypt.compare(password, this.password);
-    } catch (error) {
-      return false;
-    }
-  }
-
   getFullName(): string {
     return `${this.firstName} ${this.lastName}`;
-  }
-
-  isValidPassword(password: string): boolean {
-    return password.length >= 8;
   }
 
   deactivate(): void {
@@ -73,5 +50,10 @@ export class User extends BaseEntity {
   updateLastLogin(): void {
     this.lastLoginAt = new Date();
     this.updatedAt = new Date();
+  }
+
+  toJSON(): any {
+    const { password, ...userWithoutPassword } = this;
+    return userWithoutPassword;
   }
 }

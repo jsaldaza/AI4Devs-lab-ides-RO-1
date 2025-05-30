@@ -1,26 +1,43 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import { resolve } from 'path';
 
 export default defineConfig({
     plugins: [react()],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
-            '@components': path.resolve(__dirname, './src/components'),
-            '@pages': path.resolve(__dirname, './src/pages'),
-            '@services': path.resolve(__dirname, './src/services'),
-            '@styles': path.resolve(__dirname, './src/styles'),
-            '@utils': path.resolve(__dirname, './src/utils'),
+            '@': resolve(__dirname, './src'),
+            '@components': resolve(__dirname, './src/components'),
+            '@pages': resolve(__dirname, './src/pages'),
+            '@services': resolve(__dirname, './src/services'),
+            '@styles': resolve(__dirname, './src/styles'),
+            '@utils': resolve(__dirname, './src/utils'),
+            process: 'process/browser',
+            stream: 'stream-browserify',
+            zlib: 'browserify-zlib',
+            util: 'util',
+            assert: 'assert',
+            buffer: 'buffer'
         },
     },
+    define: {
+        'process.env': process.env,
+        global: 'globalThis'
+    },
     server: {
-        port: 5173,
+        port: 3001,
         proxy: {
             '/api': {
                 target: 'http://localhost:3000',
                 changeOrigin: true,
                 secure: false,
+            }
+        }
+    },
+    build: {
+        rollupOptions: {
+            input: {
+                main: resolve(__dirname, 'index.html')
             }
         }
     }

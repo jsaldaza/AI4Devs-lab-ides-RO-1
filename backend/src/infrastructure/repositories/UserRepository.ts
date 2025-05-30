@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { User } from '../../domain/entities/User';
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { IUserRepository } from '../../application/interfaces/IUserRepository';
 import { getDataSource } from '../database';
 
 export class UserRepository implements IUserRepository {
@@ -8,6 +8,18 @@ export class UserRepository implements IUserRepository {
 
     constructor() {
         this.repository = getDataSource().getRepository(User);
+    }
+
+    async findOne(options: { where: any }): Promise<User | null> {
+        return this.repository.findOne(options);
+    }
+
+    async save(user: User): Promise<User> {
+        return this.repository.save(user);
+    }
+
+    create(userData: Partial<User>): User {
+        return this.repository.create(userData);
     }
 
     async findById(id: number): Promise<User | null> {
@@ -20,11 +32,6 @@ export class UserRepository implements IUserRepository {
         return await this.repository.findOne({
             where: { email }
         });
-    }
-
-    async create(userData: Partial<User>): Promise<User> {
-        const user = this.repository.create(userData);
-        return await this.repository.save(user);
     }
 
     async update(id: number, userData: Partial<User>): Promise<User> {
